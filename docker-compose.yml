@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: nexumm/todo-mern-frontend
+    container_name: todo-frontend
+    networks:
+      - todo-net
+    ports:
+      - "3000:3000"
+
+  backend:
+    image: nexumm/todo-mern-backend
+    container_name: todo-backend
+    networks:
+      - todo-net
+    env_file:
+      - ./backend/.env  
+    environment:
+      - MONGO_URI=${MONGO_URI:-mongodb://root:example@todo-mongo:27017}  # Use online MONGO_URI if set, otherwise fallback to local MongoDB
+      - PORT=5000
+
+  todo-mongo:
+    image: mongo
+    container_name: todo-mongo
+    networks:
+      - todo-net
+    volumes:
+      - todo-mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+networks:
+  todo-net:
+    driver: bridge
+
+volumes:
+  todo-mongo-data:
+    driver: local
+
