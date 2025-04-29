@@ -84,6 +84,12 @@ button:hover {
   text-decoration: none;
 }
 
+.timestamp {
+  font-size: 0.75rem;
+  color: #888;
+  margin-right: 10px;
+}
+
 /* Media Query for smaller screens */
 @media screen and (max-width: 600px) {
   .create-form {

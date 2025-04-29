@@ -1,0 +1,15 @@
+# Ignore node_modules
+node_modules/
+
+# Ignore build files
+build/
+
+# Ignore environment files
+.env
+
+# Optional: Ignore lock files (not recommended to ignore in some cases)
+package-lock.json
+
+# Ignore temporary or OS files
+.DS_Store
+

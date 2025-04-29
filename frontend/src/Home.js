@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import Create from './Create';
 import './App.css';
 import axios from 'axios';
-import { BsCircleFill, BsFillCheckCircleFill, BsFillTrashFill, BsPencil } from 'react-icons/bs';
+import { BsCircleFill, BsFillCheckCircleFill, BsFillTrashFill, BsPencil, BsCheckLg } from 'react-icons/bs';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 const Home = () => {
     const [todos, setTodos] = useState([]);
@@ -18,7 +22,6 @@ const Home = () => {
     const edit = (id) => {
         axios.put(`http://localhost:5000/edit/${id}`)
             .then(result => {
-                console.log(result.data);
                 const updatedTodos = todos.map(todo => {
                     if (todo._id === id) {
                         return { ...todo, done: !todo.done };
@@ -33,7 +36,6 @@ const Home = () => {
     const Update = (id, updatedTask) => {
         axios.put(`http://localhost:5000/update/${id}`, { task: updatedTask })
             .then(result => {
-                console.log(result.data);
                 const updatedTodos = todos.map(todo => {
                     if (todo._id === id) {
                         return { ...todo, task: updatedTask };
@@ -43,19 +45,19 @@ const Home = () => {
                 setTodos(updatedTodos);
                 setTaskid('');
                 setUpdatetask('');
-                Window.location.reload();
             })
             .catch(err => console.log(err));
     };
 
     const Hdelete = (id) => {
-        axios.delete(`http://localhost:5000/delete/${id}`)
-            .then(result => {
-                console.log(result.data);
-                const updatedTodos = todos.filter(todo => todo._id !== id);
-                setTodos(updatedTodos);
-            })
-            .catch(err => console.log(err));
+        if (window.confirm('Are you sure you want to delete this TODO item?')) {
+            axios.delete(`http://localhost:5000/delete/${id}`)
+                .then(result => {
+                    const updatedTodos = todos.filter(todo => todo._id !== id);
+                    setTodos(updatedTodos);
+                })
+                .catch(err => console.log(err));
+        }
     };
 
     return (
@@ -66,24 +68,40 @@ const Home = () => {
                     todos.map((todo) => (
                         <div className='task' key={todo._id}>
                             <div className='checkbox'>
-                                {todo.done ? <BsFillCheckCircleFill className='icon' /> :
-                                    <BsCircleFill className='icon' onClick={() => edit(todo._id)} />}
-                                {taskid === todo._id ?
-                                    <input type='text' value={updatetask} onChange={e => setUpdatetask(e.target.value)} />
-                                    :
-                                    <p className={todo.done ? 'through' : 'normal'}>{todo.task}</p>
-                                }
+                                {todo.done
+                                    ? <BsFillCheckCircleFill className='icon' />
+                                    : <BsCircleFill className='icon' onClick={() => edit(todo._id)} />}
+                                {taskid === todo._id ? (
+                                    <input
+                                        type='text'
+                                        value={updatetask}
+                                        onChange={e => setUpdatetask(e.target.value)}
+                                    />
+                                ) : (
+                                    <p className={todo.done ? 'through' : 'normal'}>
+                                        {todo.task}
+                                    </p>
+                                )}
                             </div>
-                            <div>
+                            <div className='actions'>
+                                <small className='timestamp'>
+                                    Created {dayjs(todo.createdAt).fromNow()}
+                                </small>
                                 <span>
-                                    <BsPencil className='icon' onClick={() => {
-                                        if (taskid === todo._id) {
-                                            Update(todo._id, updatetask);
-                                        } else {
-                                            setTaskid(todo._id);
-                                            setUpdatetask(todo.task);
-                                        }
-                                    }} />
+                                    {taskid === todo._id ? (
+                                        <BsCheckLg
+                                            className='icon'
+                                            onClick={() => Update(todo._id, updatetask)}
+                                        />
+                                    ) : (
+                                        <BsPencil
+                                            className='icon'
+                                            onClick={() => {
+                                                setTaskid(todo._id);
+                                                setUpdatetask(todo.task);
+                                            }}
+                                        />
+                                    )}
                                     <BsFillTrashFill className='icon' onClick={() => Hdelete(todo._id)} />
                                 </span>
                             </div>
@@ -95,3 +113,4 @@ const Home = () => {
 };
 
 export default Home;
+

@@ -1,0 +1,16 @@
+# Ignore node_modules
+node_modules/
+
+# Ignore environment files
+.env
+
+# Optional: Ignore lock files (not recommended to ignore in some cases)
+package-lock.json
+
+# Optional: Ignore logs and temporary files
+*.log
+*.tmp
+
+# Ignore other temporary files
+.DS_Store
+
